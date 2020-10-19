@@ -38,6 +38,8 @@
 #define MOVEIT_OMPL_INTERFACE_OMPL_PLANNING_CONTEXT_MANAGER_
 
 #include <ros/ros.h>
+#include <boost/scoped_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 #include <pluginlib/class_loader.h>
 #include <dynamic_reconfigure/server.h>
 #include <moveit/planning_interface/planning_interface.h>
@@ -81,9 +83,11 @@ public:
     /// \brief Determine whether this plugin instance is able to represent this planning request
     virtual bool canServiceRequest(const planning_interface::MotionPlanRequest &req) const;
 
+
+
 protected:
     /// \brief Retrieve an instance of a planning context given the configuration settings
-    boost::shared_ptr<OMPLPlanningContext> getPlanningContext(const planning_interface::PlannerConfigurationSettings &config) const;
+    std::shared_ptr<OMPLPlanningContext> getPlanningContext(const planning_interface::PlannerConfigurationSettings &config) const;
 
     /// \brief Read planning context information from the ROS param server
     void configurePlanningContexts();
@@ -91,6 +95,12 @@ protected:
     /// \brief Read planning group context parameters from the ROS param server
     void getGroupSpecificParameters(const std::string& group_name,
                                     std::map<std::string, std::string>& specific_group_params);
+
+    template<class T>
+    std::shared_ptr<T> to_std(const boost::shared_ptr<T> &p) const
+    {
+      return std::shared_ptr<T>(p.get(), [p](...) mutable {});
+    }
 
 private:
     /// \brief Callback for the dynamic reconfigure server options of this node
@@ -106,7 +116,7 @@ private:
     ros::NodeHandle nh_;
 
     /// \brief The plugin loader for the planning context plugins
-    boost::shared_ptr<pluginlib::ClassLoader<OMPLPlanningContext> > ompl_planner_loader_;
+    std::shared_ptr<pluginlib::ClassLoader<OMPLPlanningContext> > ompl_planner_loader_;
 
     constraint_sampler_manager_loader::ConstraintSamplerManagerLoaderPtr constraint_sampler_manager_loader_;
     constraint_samplers::ConstraintSamplerManagerPtr constraint_sampler_manager_;

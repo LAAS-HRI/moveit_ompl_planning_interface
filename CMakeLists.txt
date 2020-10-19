@@ -1,13 +1,15 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(moveit_ompl_planning_interface)
 
+add_definitions(-std=c++11)
+
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
+find_package(OMPL)
 find_package(Boost REQUIRED system filesystem date_time thread serialization)
 find_package(catkin REQUIRED COMPONENTS
-  ompl
   moveit_core
   moveit_ros_planning
   moveit_msgs
@@ -27,7 +29,6 @@ catkin_package(
   INCLUDE_DIRS
     ompl_interface/include
   CATKIN_DEPENDS
-    ompl
     moveit_core
     moveit_ros_planning
     moveit_msgs

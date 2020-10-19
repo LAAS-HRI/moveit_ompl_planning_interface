@@ -1,5 +1,7 @@
 set(MOVEIT_LIB_NAME moveit_ompl_planning_interface) # added "planning" to avoid conflict with existing MoveIt library
 
+add_definitions(-std=c++11)
+
 add_library(${MOVEIT_LIB_NAME}
   src/ompl_planning_context_manager.cpp
   src/constraints_library.cpp

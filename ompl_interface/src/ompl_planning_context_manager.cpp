@@ -133,7 +133,7 @@ planning_interface::PlanningContextPtr OMPLPlanningContextManager::getPlanningCo
         config = pc->second;
     }
 
-    boost::shared_ptr<OMPLPlanningContext> context = getPlanningContext(config);
+    std::shared_ptr<OMPLPlanningContext> context = getPlanningContext(config);
 
     if (context)
     {
@@ -189,16 +189,17 @@ bool OMPLPlanningContextManager::canServiceRequest(const planning_interface::Mot
 }
 
 
-boost::shared_ptr<OMPLPlanningContext> OMPLPlanningContextManager::getPlanningContext(const planning_interface::PlannerConfigurationSettings &config) const
+std::shared_ptr<OMPLPlanningContext> OMPLPlanningContextManager::getPlanningContext(const planning_interface::PlannerConfigurationSettings &config) const
 {
     // TODO: Cache contexts we have created before?
     std::map<std::string, std::string>::const_iterator config_it = config.config.find("plugin");
     if (config_it != config.config.end())
     {
-        return ompl_planner_loader_->createInstance(config_it->second);
+        return to_std(ompl_planner_loader_->createInstance(config_it->second));
     }
     ROS_WARN("No plugin specified for planner configuration '%s'.  Assuming default plugin.", config.name.c_str());
-    return ompl_planner_loader_->createInstance(DEFAULT_OMPL_PLANNING_PLUGIN);
+
+    return to_std(ompl_planner_loader_->createInstance(DEFAULT_OMPL_PLANNING_PLUGIN));
 }
 
 void OMPLPlanningContextManager::configurePlanningContexts()
